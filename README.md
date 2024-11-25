@@ -1,8 +1,9 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
-
-
+For access to neccessary environment variables:
+    - Make sure dotenv is installed locally
+    - Create .env.development file and name the appropriate database inside (PGDATABASE=nc_news)
+    - Create .env.test file and name the appropriate database inside (PGDATABASE=nc_news_test)
 
 --- 
 
