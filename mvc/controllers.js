@@ -1,4 +1,4 @@
-const { getApiModel, getTopicsModel } = require("./models")
+const { getApiModel, getTopicsModel, getArticlesModel } = require("./models")
 
 exports.getApiController = (req, res, next) => {
     const endpoints = getApiModel()
@@ -10,8 +10,14 @@ exports.getTopicsController = (req, res, next) => {
         .then((topics) => {
             res.status(200).send({ topics: topics })
         })
-        .catch((err)=>{
-            console.log('Error Caught: ', err)
-            next(err)
-        })
+        .catch(next)
+}
+
+exports.getArticlesController = (req, res, next) => {
+    const {article_id} = req.params
+    getArticlesModel(article_id)
+    .then((article)=>{
+        res.status(200).send({article: article})
+    })
+    .catch(next)
 }
