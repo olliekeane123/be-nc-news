@@ -1,6 +1,7 @@
 exports.psqlErrorHandler = (err, req, res, next) => {
+    console.log(err)
     if (err.code === "22P02") {
-        res.status(400).send({ msg: "INVALID TEXT REPRESENTATION" })
+        res.status(400).send({ msg: "Bad Request" })
     } else {
         next(err)
     }
