@@ -1,6 +1,17 @@
-const { getApiModel } = require("./models")
+const { getApiModel, getTopicsModel } = require("./models")
 
-exports.getApiController = (req, res) => {
+exports.getApiController = (req, res, next) => {
     const endpoints = getApiModel()
-    res.status(200).send({endpoints: endpoints})
+    res.status(200).send({ endpoints: endpoints })
+}
+
+exports.getTopicsController = (req, res, next) => {
+    getTopicsModel()
+        .then((topics) => {
+            res.status(200).send({ topics: topics })
+        })
+        .catch((err)=>{
+            console.log('Error Caught: ', err)
+            next(err)
+        })
 }
