@@ -1,5 +1,3 @@
-// const dataTest = require("../db/data/test-data/index")
-// const dataDev = require("../db/data/development-data/index")
 const endpoints = require("../endpoints.json")
 const db = require("../db/connection")
 
@@ -8,7 +6,8 @@ exports.getApiModel = () => {
 }
 
 exports.getTopicsModel = () => {
-    return db.query(`SELECT * FROM topics`).then(({rows})=>{
+    // throw error = { status: 400, msg: "badd request or somthing" }
+    return db.query(`SELECT * FROM topics`).then(({ rows }) => {
         return rows
     })
 }

@@ -9,4 +9,10 @@ app.get("/api", getApiController)
 
 app.get("/api/topics", getTopicsController)
 
+app.use(psqlErrorHandler)
+
+app.use(customErrorHandler)
+
+app.use(serverErrorHandler)
+
 module.exports = app
