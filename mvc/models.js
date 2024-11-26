@@ -1,5 +1,18 @@
 const db = require("../db/connection")
 
+exports.checkCategoryExists = (articleId) => {
+    return db
+        .query(`SELECT * FROM articles WHERE article_id = $1`, [articleId])
+        .then(({ rows }) => {
+            if (!rows.length) {
+                return Promise.reject({
+                    status: 404,
+                    msg: "Article Does Not Exist",
+                })
+            }
+        })
+}
+
 exports.getTopicsModel = () => {
     return db.query(`SELECT * FROM topics`).then(({ rows }) => {
         return rows
@@ -27,10 +40,18 @@ exports.getArticleByIdModel = (articleId) => {
             if (rows.length === 0) {
                 return Promise.reject({
                     status: 404,
-                    msg: "article does not exist",
+                    msg: "Article Does Not Exist",
                 })
             } else {
                 return rows[0]
             }
+        })
+}
+
+exports.getCommentsByArticleIdModel = (articleId) => {
+    return db
+        .query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`, [articleId])
+        .then(({ rows }) => {
+            return rows
         })
 }
