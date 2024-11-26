@@ -104,11 +104,12 @@ describe("GET /api/articles/:article_id", () => {
 })
 
 describe("GET /api/articles/:article_id/comments", () => {
-    test("GET:200 sends an array of comments corresponding to the requested article_id", () => {
+    test("GET:200 sends an array of comments corresponding to the requested article_id, sorted by date/time descending", () => {
         return request(app)
             .get("/api/articles/1/comments")
             .expect(200)
             .then(({ body: { comments } }) => {
+                console.log(comments)
                 expect(comments).toHaveLength(11)
                 expect(comments).toBeSortedBy("created_at", {
                     descending: true,
