@@ -22,7 +22,7 @@ app.get("/api/articles", getArticlesController)
 
 app.get("/api/articles/:article_id", getArticleByIdController)
 
-
+app.get("/api/articles/:article_id/comments", getCommentsByArticleIdController)
 
 app.use(psqlErrorHandler)
 
