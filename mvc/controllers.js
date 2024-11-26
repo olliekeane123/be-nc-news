@@ -7,6 +7,7 @@ const {
     getArticleByIdModel,
     getCommentsByArticleIdModel,
     postCommentModel,
+    patchVotesModel
 } = require("./models")
 
 exports.getApiController = (req, res, next) => {
@@ -61,6 +62,22 @@ exports.postCommentController = (req, res, next) => {
     Promise.all(promises)
         .then(([firstPromise, comment]) => {
             res.status(201).send({ comment })
+        })
+        .catch(next)
+}
+
+exports.patchVotesController = (req, res, next) => {
+    const {
+        body,
+        params: { article_id },
+    } = req
+    const promises = [
+        patchVotesModel(body, article_id),
+        checkCategoryExists(article_id),
+    ]
+    Promise.all(promises)
+        .then(([updatedArticle]) => {
+            res.status(200).send({updatedArticle})
         })
         .catch(next)
 }
