@@ -1,11 +1,12 @@
-const { promises } = require("supertest/lib/test")
+// const { promises } = require("supertest/lib/test") ??
 const endpoints = require("../endpoints.json")
 const {
+    checkCategoryExists,
     getTopicsModel,
     getArticlesModel,
     getArticleByIdModel,
     getCommentsByArticleIdModel,
-    checkCategoryExists,
+    postCommentModel,
 } = require("./models")
 
 exports.getApiController = (req, res, next) => {
@@ -37,10 +38,29 @@ exports.getArticleByIdController = (req, res, next) => {
 
 exports.getCommentsByArticleIdController = (req, res, next) => {
     const { article_id } = req.params
-    const promises = [getCommentsByArticleIdModel(article_id), checkCategoryExists(article_id)]
+    const promises = [
+        getCommentsByArticleIdModel(article_id),
+        checkCategoryExists(article_id),
+    ]
     Promise.all(promises)
         .then(([comments]) => {
             res.status(200).send({ comments })
+        })
+        .catch(next)
+}
+
+exports.postCommentController = (req, res, next) => {
+    const {
+        body,
+        params: { article_id },
+    } = req
+    const promises = [
+        checkCategoryExists(article_id),
+        postCommentModel(body, article_id),
+    ]
+    Promise.all(promises)
+        .then(([firstPromise, comment]) => {
+            res.status(201).send({ comment })
         })
         .catch(next)
 }

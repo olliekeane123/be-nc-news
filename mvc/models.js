@@ -1,4 +1,5 @@
 const db = require("../db/connection")
+const { convertTimestampToDate } = require("../db/seeds/utils")
 
 exports.checkCategoryExists = (articleId) => {
     return db
@@ -54,4 +55,14 @@ exports.getCommentsByArticleIdModel = (articleId) => {
         .then(({ rows }) => {
             return rows
         })
+}
+
+exports.postCommentModel = ({username, body}, articleId) =>{
+    const commentValues = [body, 0, username, articleId]
+      return db
+      .query(`INSERT INTO comments (body, votes, author, article_id, created_at) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *;`, commentValues)
+      .then(({rows})=>{
+          return rows[0]
+      })
+
 }
