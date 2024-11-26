@@ -12,10 +12,6 @@ beforeEach(() => {
     return seed(data)
 })
 
-/* Set up your test imports here */
-
-/* Set up your beforeEach & afterAll functions here */
-
 describe("GET /api", () => {
     test("200: Responds with an object detailing the documentation for each endpoint", () => {
         return request(app)
@@ -38,6 +34,41 @@ describe("GET /api/topics", () => {
                     expect(topic).toMatchObject({
                         description: expect.any(String),
                         slug: expect.any(String),
+                    })
+                })
+            })
+    })
+})
+
+describe("GET /api/articles", () => {
+    test("200: returns array of all articles objects with the correct key values - including the key of body removed, and an added key of comment_count with the correct values. Array should be sorted by time created in descending order", () => {
+        return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                // exampleArticle manually counted as 11
+                const exampleArticle = articles.find(
+                    (article) =>
+                        article.title === "Living in the shadow of a great man"
+                )
+                expect(exampleArticle).toMatchObject({
+                    comment_count: 11,
+                })
+
+                expect(articles.length).toBe(13)
+                expect(articles).toBeSortedBy("created_at", {
+                    coerce: true,
+                    descending: true,
+                })
+                articles.forEach((article) => {
+                    expect(article).not.toContainKey("body")
+                    expect(article).toMatchObject({
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number),
                     })
                 })
             })
@@ -78,41 +109,6 @@ describe("/api/articles/:article_id", () => {
             .expect(400)
             .then(({ body }) => {
                 expect(body.msg).toBe("Bad Request")
-            })
-    })
-})
-
-describe("GET /api/articles", () => {
-    test("200: returns array of all articles objects with the correct key values - including the key of body removed, and an added key of comment_count with the correct values. Array should be sorted by time created in descending order", () => {
-        return request(app)
-            .get("/api/articles")
-            .expect(200)
-            .then(({ body: { articles } }) => {
-                // exampleArticle manually counted as 11
-                const exampleArticle = articles.find(
-                    (article) =>
-                        article.title === "Living in the shadow of a great man"
-                )
-                expect(exampleArticle).toMatchObject({
-                    comment_count: 11,
-                })
-
-                expect(articles.length).toBe(13)
-                expect(articles).toBeSortedBy("created_at", {
-                    coerce: true,
-                    descending: true,
-                })
-                articles.forEach((article) => {
-                    expect(article).not.toContainKey("body")
-                    expect(article).toMatchObject({
-                        title: expect.any(String),
-                        topic: expect.any(String),
-                        author: expect.any(String),
-                        created_at: expect.any(String),
-                        votes: expect.any(Number),
-                        comment_count: expect.any(Number),
-                    })
-                })
             })
     })
 })
