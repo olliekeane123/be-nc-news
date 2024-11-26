@@ -225,3 +225,72 @@ describe("POST /api/articles/:article_id/comments", () => {
             })
     })
 })
+
+describe("PATCH /api/articles/:article_id", () => {
+    test("PATCH:200 alters the vote property of the specified article (article_id) by the value of the (positive) voteDifference sent in the request, responds with updated article to the client", () => {
+        const voteBody = { voteDifference: 50 }
+        return request(app)
+            .patch("/api/articles/13")
+            .send(voteBody)
+            .expect(200)
+            .then(({ body: { updatedArticle } }) => {
+                expect(updatedArticle).toMatchObject({
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: 50,
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number),
+                })
+            })
+    })
+    test("PATCH:200 alters the vote property of the specified article (article_id) by the value of the (negative) voteDifference sent in the request, responds with updated article to the client", () => {
+        const voteBody = { voteDifference: -50 }
+        return request(app)
+            .patch("/api/articles/2")
+            .send(voteBody)
+            .expect(200)
+            .then(({ body: { updatedArticle } }) => {
+                expect(updatedArticle).toMatchObject({
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: -50,
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number),
+                })
+            })
+    })
+    test("PATCH:400 responds with an appropriate status and error message when provided with a bad voteBody (invalid voteDifference))", () => {
+        const voteBody = { voteDifference: "banana" }
+        return request(app)
+            .patch("/api/articles/2")
+            .send(voteBody)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+    test("PATCH:404 sends an appropriate status and error message when given a valid but non-existent article_id", () => {
+        const voteBody = { voteDifference: 50 }
+        return request(app)
+            .patch("/api/articles/999")
+            .send(voteBody)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Article Does Not Exist")
+            })
+    })
+    test("PATCH:400 sends an appropriate status and error message when given an invalid article_id", () => {
+        const voteBody = { voteDifference: 50 }
+        return request(app)
+            .patch("/api/articles/not_an_article")
+            .send(voteBody)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+})
