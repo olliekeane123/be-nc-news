@@ -1,6 +1,5 @@
 const endpoints = require("../endpoints.json")
 const {
-    getApiModel,
     getTopicsModel,
     getArticlesModel,
     getArticleByIdModel,
@@ -8,14 +7,13 @@ const {
 } = require("./models")
 
 exports.getApiController = (req, res, next) => {
-    res.status(200).send({ endpoints: endpoints })
+    res.status(200).send({ endpoints })
 }
 
 exports.getTopicsController = (req, res, next) => {
-    getTopicsModel()
-        .then((topics) => {
-            res.status(200).send({ topics })
-        })
+    getTopicsModel().then((topics) => {
+        res.status(200).send({ topics })
+    })
 }
 
 exports.getArticlesController = (req, res, next) => {
