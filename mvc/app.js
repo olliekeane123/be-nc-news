@@ -5,7 +5,8 @@ const {
     getTopicsController,
     getArticlesController,
     getArticleByIdController,
-    getCommentsByArticleIdController
+    getCommentsByArticleIdController,
+    postCommentController
 } = require("./controllers")
 const {
     psqlErrorHandler,
@@ -13,6 +14,7 @@ const {
     serverErrorHandler,
 } = require("./error-handlers")
 
+app.use(express.json())
 
 app.get("/api", getApiController)
 
@@ -23,6 +25,8 @@ app.get("/api/articles", getArticlesController)
 app.get("/api/articles/:article_id", getArticleByIdController)
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleIdController)
+
+app.post("/api/articles/:article_id/comments", postCommentController)
 
 app.use(psqlErrorHandler)
 

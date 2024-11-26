@@ -58,6 +58,7 @@ describe("GET /api/articles", () => {
                         author: expect.any(String),
                         created_at: expect.any(String),
                         votes: expect.any(Number),
+                        article_img_url: expect.any(String),
                         comment_count: expect.any(Number),
                     })
                 })
@@ -109,7 +110,6 @@ describe("GET /api/articles/:article_id/comments", () => {
             .get("/api/articles/1/comments")
             .expect(200)
             .then(({ body: { comments } }) => {
-                console.log(comments)
                 expect(comments).toHaveLength(11)
                 expect(comments).toBeSortedBy("created_at", {
                     descending: true,
@@ -145,6 +145,80 @@ describe("GET /api/articles/:article_id/comments", () => {
     test("GET:400 sends an appropriate status and error message when given an invalid id", () => {
         return request(app)
             .get("/api/articles/not_an_article/comments")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+})
+
+describe("POST /api/articles/:article_id/comments", () => {
+    test("POST:201 inserts a new comment to the db and sends the comment body back to the client", () => {
+        const newComment = {
+            username: "butter_bridge",
+            body: "This is just a test comment",
+        }
+        return request(app)
+            .post("/api/articles/13/comments")
+            .send(newComment)
+            .expect(201)
+            .then(({ body: { comment } }) => {
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    body: "This is just a test comment",
+                    article_id: 13,
+                    author: "butter_bridge",
+                    votes: 0,
+                    created_at: expect.any(String),
+                })
+            })
+    })
+    test("POST:400 responds with an appropriate status and error message when provided with a bad comment (no username/body)", () => {
+        const newComment = {
+            body: "Helloooo",
+        }
+        return request(app)
+            .post("/api/articles/13/comments")
+            .send(newComment)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+    test("POST:400 sends an appropriate status and error message when given a non-existent username", () => {
+        const newComment = {
+            username: "nonexistent_username",
+            body: "This is just a test comment",
+        }
+        return request(app)
+            .post("/api/articles/13/comments")
+            .send(newComment)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+    test("POST:404 sends an appropriate status and error message when given a valid but non-existent article_id", () => {
+        const newComment = {
+            username: "butter_bridge",
+            body: "This is just a test comment",
+        }
+        return request(app)
+            .post("/api/articles/999/comments")
+            .send(newComment)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Article Does Not Exist")
+            })
+    })
+    test("POST:400 sends an appropriate status and error message when given an invalid article_id", () => {
+        const newComment = {
+            username: "butter_bridge",
+            body: "This is just a test comment",
+        }
+        return request(app)
+            .post("/api/articles/not_an_article/comments")
+            .send(newComment)
             .expect(400)
             .then(({ body }) => {
                 expect(body.msg).toBe("Bad Request")
