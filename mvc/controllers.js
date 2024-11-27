@@ -24,10 +24,12 @@ exports.getTopicsController = (req, res, next) => {
 }
 
 exports.getArticlesController = (req, res, next) => {
-    getArticlesModel()
+    const {sort_by, order} = req.query
+    getArticlesModel(sort_by, order)
         .then((articles) => {
             res.status(200).send({ articles })
         })
+        .catch(next)
 }
 
 exports.getArticleByIdController = (req, res, next) => {

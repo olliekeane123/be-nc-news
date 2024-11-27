@@ -12,6 +12,41 @@ beforeEach(() => {
     return seed(data)
 })
 
+describe("GET/POST/PATCH/DELETE /api/* - (Global Errors)", ()=>{
+    test("GET  404: Returns appropriate Not Found Error message when unfound GET request is made", ()=>{
+        return request(app)
+            .get("/api/bananas")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("/api/bananas Not Found On Server")
+            })
+    })
+    test("POST  404: Returns appropriate Not Found Error message when unfound POST request is made", ()=>{
+        return request(app)
+            .post("/api/melons")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("/api/melons Not Found On Server")
+            })
+    })
+    test("PATCH  404: Returns appropriate Not Found Error message when unfound PATCH request is made", ()=>{
+        return request(app)
+            .patch("/api/apples")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("/api/apples Not Found On Server")
+            })
+    })
+    test("404: Returns appropriate Not Found Error message when unfound DELETE request is made", ()=>{
+        return request(app)
+            .delete("/api/oranges")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("/api/oranges Not Found On Server")
+            })
+    })
+})
+
 describe("GET /api", () => {
     test("200: Responds with an object detailing the documentation for each endpoint", () => {
         return request(app)
@@ -62,6 +97,107 @@ describe("GET /api/articles", () => {
                         comment_count: expect.any(Number),
                     })
                 })
+            })
+    })
+    test("200: returns array of all articles sorted by the any valid column specified in the query (default: descending order)", () => {
+        return request(app)
+            .get("/api/articles?sort_by=comment_count")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles.length).toBe(13)
+                expect(articles).toBeSortedBy("comment_count", {
+                    descending: true,
+                })
+                articles.forEach((article) => {
+                    expect(article).not.toContainKey("body")
+                    expect(article).toMatchObject({
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number),
+                    })
+                })
+            })
+    })
+    test("404: sends an appropriate status and error message when given a valid but non-existent sort_by query (non-existent column)", () => {
+        return request(app)
+            .get("/api/articles?sort_by=bananas")
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Column Does Not Exist")
+            })
+    })
+    test("404: sends an appropriate status and error message when given a valid but non-existent sort_by query (ambiguous column - body is a column but does not exist in the returned query object)", () => {
+        return request(app)
+            .get("/api/articles?sort_by=body")
+            .expect(404)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Column Does Not Exist")
+            })
+    })
+    test("400: sends an appropriate status and error message when given an invalid sort_by query", () => {
+        return request(app)
+            .get("/api/articles?sort_by=123")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad Request: Invalid Sort By")
+            })
+    })
+    test("200: returns array of all articles sorted in the order of the specified order query (With sort_by query)", () => {
+        return request(app)
+            .get("/api/articles?sort_by=comment_count&order=asc")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles.length).toBe(13)
+                expect(articles).toBeSortedBy("comment_count", {
+                    descending: false,
+                })
+                articles.forEach((article) => {
+                    expect(article).not.toContainKey("body")
+                    expect(article).toMatchObject({
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number),
+                    })
+                })
+            })
+    })
+    test("200: returns array of all articles sorted in the order of the specified order query (Without sort_by query)", () => {
+        return request(app)
+            .get("/api/articles?order=asc")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles.length).toBe(13)
+                expect(articles).toBeSortedBy("created_at", {
+                    descending: false,
+                })
+                articles.forEach((article) => {
+                    expect(article).not.toContainKey("body")
+                    expect(article).toMatchObject({
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number),
+                    })
+                })
+            })
+    })
+    test("400: sends an appropriate status and error message when given an invalid order query", () => {
+        return request(app)
+            .get("/api/articles?order=invalid-order")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad Request")
             })
     })
 })

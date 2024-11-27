@@ -14,7 +14,7 @@ exports.checkArticleExists = (articleId) => {
         })
 }
 
-exports.checkCommentExists = (commentId) =>{
+exports.checkCommentExists = (commentId) => {
     return db
         .query(`SELECT * FROM comments WHERE comment_id = $1`, [commentId])
         .then(({ rows }) => {
@@ -33,18 +33,19 @@ exports.getTopicsModel = () => {
     })
 }
 
-exports.getArticlesModel = () => {
-    return db
-        .query(
-            `SELECT articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.article_id) AS INT) AS comment_count
+exports.getArticlesModel = (sort_by, order) => {
+    let sortByValue
+    sort_by ? (sortByValue = sort_by) : (sortByValue = "created_at")
+    let orderValue
+    order ? (orderValue = order) : (orderValue = " DESC")
+    let query = `SELECT articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.article_id) AS INT) AS comment_count
         FROM articles
         LEFT JOIN comments ON articles.article_id = comments.article_id
         GROUP BY articles.article_id
-        ORDER BY created_at DESC;`
-        )
-        .then(({ rows }) => {
-            return rows
-        })
+        ORDER BY ${sortByValue} ${orderValue}`
+    return db.query(query).then(({ rows }) => {
+        return rows
+    })
 }
 
 exports.getArticleByIdModel = (articleId) => {
@@ -110,14 +111,16 @@ exports.patchVotesModel = ({ voteDifference }, articleId) => {
 
 exports.deleteCommentByIdModel = (commentId) => {
     return db
-        .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *;", [commentId])
-        .then(({rows}) => {
-          if(!rows.length){
-            return Promise.reject({
-                status: 404,
-                msg: "Comment Does Not Exist",
-            })
-          }
+        .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *;", [
+            commentId,
+        ])
+        .then(({ rows }) => {
+            if (!rows.length) {
+                return Promise.reject({
+                    status: 404,
+                    msg: "Comment Does Not Exist",
+                })
+            }
         })
 }
 
