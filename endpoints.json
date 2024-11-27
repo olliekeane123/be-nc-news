@@ -96,5 +96,9 @@
                 "comment_count": 0
             }
         }
+    },
+    "DELETE /api/articles/:article_id": {
+        "description": "deletes the specified comment and sends no body back",
+        "queries": []
     }
 }

@@ -1,7 +1,7 @@
 const db = require("../db/connection")
 const { convertTimestampToDate } = require("../db/seeds/utils")
 
-exports.checkCategoryExists = (articleId) => {
+exports.checkArticleExists = (articleId) => {
     return db
         .query(`SELECT * FROM articles WHERE article_id = $1`, [articleId])
         .then(({ rows }) => {
@@ -9,6 +9,19 @@ exports.checkCategoryExists = (articleId) => {
                 return Promise.reject({
                     status: 404,
                     msg: "Article Does Not Exist",
+                })
+            }
+        })
+}
+
+exports.checkCommentExists = (commentId) =>{
+    return db
+        .query(`SELECT * FROM comments WHERE comment_id = $1`, [commentId])
+        .then(({ rows }) => {
+            if (!rows.length) {
+                return Promise.reject({
+                    status: 404,
+                    msg: "Comment Does Not Exist",
                 })
             }
         })
@@ -61,10 +74,10 @@ exports.getCommentsByArticleIdModel = (articleId) => {
 }
 
 exports.postCommentModel = ({ username, body }, articleId) => {
-    const commentValues = [body, 0, username, articleId]
+    const commentValues = [body, username, articleId]
     return db
         .query(
-            `INSERT INTO comments (body, votes, author, article_id, created_at) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *;`,
+            `INSERT INTO comments (body, author, article_id, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *;`,
             commentValues
         )
         .then(({ rows }) => {
@@ -92,5 +105,18 @@ exports.patchVotesModel = ({ voteDifference }, articleId) => {
         })
         .then(({ rows }) => {
             return rows[0]
+        })
+}
+
+exports.deleteCommentByIdModel = (commentId) => {
+    return db
+        .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *;", [commentId])
+        .then(({rows}) => {
+          if(!rows.length){
+            return Promise.reject({
+                status: 404,
+                msg: "Comment Does Not Exist",
+            })
+          }
         })
 }
