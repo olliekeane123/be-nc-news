@@ -8,7 +8,8 @@ const {
     getCommentsByArticleIdController,
     postCommentController,
     patchVotesController,
-    deleteCommentByIdController
+    deleteCommentByIdController,
+    getUsersController
 } = require("./controllers")
 const {
     psqlErrorHandler,
@@ -33,6 +34,8 @@ app.post("/api/articles/:article_id/comments", postCommentController)
 app.patch("/api/articles/:article_id", patchVotesController)
 
 app.delete("/api/comments/:comment_id", deleteCommentByIdController)
+
+app.get("/api/users", getUsersController)
 
 app.use(psqlErrorHandler)
 

@@ -9,7 +9,8 @@ const {
     getCommentsByArticleIdModel,
     postCommentModel,
     patchVotesModel,
-    deleteCommentByIdModel
+    deleteCommentByIdModel,
+    getUsersModel
 } = require("./models")
 
 exports.getApiController = (req, res, next) => {
@@ -27,7 +28,6 @@ exports.getArticlesController = (req, res, next) => {
         .then((articles) => {
             res.status(200).send({ articles })
         })
-        .catch(next)
 }
 
 exports.getArticleByIdController = (req, res, next) => {
@@ -92,4 +92,11 @@ exports.deleteCommentByIdController = (req, res, next) => {
         res.status(204).send()
     })
     .catch(next)
+}
+
+
+exports.getUsersController = (req, res, next) => {
+    getUsersModel().then((users) => {
+        res.status(200).send({ users })
+    })
 }

@@ -120,3 +120,9 @@ exports.deleteCommentByIdModel = (commentId) => {
           }
         })
 }
+
+exports.getUsersModel = () => {
+    return db.query(`SELECT * FROM users`).then(({ rows }) => {
+        return rows
+    })
+}
