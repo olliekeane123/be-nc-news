@@ -1,5 +1,6 @@
 const db = require("../db/connection")
-const { convertTimestampToDate } = require("../db/seeds/utils")
+const format = require("pg-format")
+const { validateQueries } = require("../db/seeds/utils")
 
 exports.checkArticleExists = (articleId) => {
     return db
@@ -33,18 +34,26 @@ exports.getTopicsModel = () => {
     })
 }
 
-exports.getArticlesModel = (sort_by, order) => {
-    let sortByValue
-    sort_by ? (sortByValue = sort_by) : (sortByValue = "created_at")
-    let orderValue
-    order ? (orderValue = order) : (orderValue = " DESC")
-    let query = `SELECT articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.article_id) AS INT) AS comment_count
+exports.getArticlesModel = (sort_by, order, topic) => {
+    return validateQueries(sort_by, order, topic).then(() => {
+        const sortByValue = sort_by || "created_at"
+        const orderValue = order || "DESC"
+        const topicValue = topic || "%"
+
+        let query = `
+        SELECT articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, 
+               CAST(COUNT(comments.article_id) AS INT) AS comment_count
         FROM articles
         LEFT JOIN comments ON articles.article_id = comments.article_id
+        WHERE articles.topic LIKE %L 
         GROUP BY articles.article_id
-        ORDER BY ${sortByValue} ${orderValue}`
-    return db.query(query).then(({ rows }) => {
-        return rows
+        ORDER BY %I %s`
+
+        query = format(query, topicValue, sortByValue, orderValue)
+
+        return db.query(query).then(({ rows }) => {
+            return rows
+        })
     })
 }
 

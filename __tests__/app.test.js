@@ -122,20 +122,20 @@ describe("GET /api/articles", () => {
                 })
             })
     })
-    test("404: sends an appropriate status and error message when given a valid but non-existent sort_by query (non-existent column)", () => {
+    test("400: sends an appropriate status and error message when given a non-existent sort_by query (non-existent column)", () => {
         return request(app)
             .get("/api/articles?sort_by=bananas")
-            .expect(404)
+            .expect(400)
             .then(({ body: { msg } }) => {
-                expect(msg).toBe("Column Does Not Exist")
+                expect(msg).toBe("Bad Request: Invalid Sort_By Query")
             })
     })
-    test("404: sends an appropriate status and error message when given a valid but non-existent sort_by query (ambiguous column - body is a column but does not exist in the returned query object)", () => {
+    test("400: sends an appropriate status and error message when given a valid but non-existent sort_by query (ambiguous column - body is a column but does not exist in the returned query object)", () => {
         return request(app)
             .get("/api/articles?sort_by=body")
-            .expect(404)
+            .expect(400)
             .then(({ body: { msg } }) => {
-                expect(msg).toBe("Column Does Not Exist")
+                expect(msg).toBe("Bad Request: Invalid Sort_By Query")
             })
     })
     test("400: sends an appropriate status and error message when given an invalid sort_by query", () => {
@@ -143,7 +143,7 @@ describe("GET /api/articles", () => {
             .get("/api/articles?sort_by=123")
             .expect(400)
             .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad Request: Invalid Sort By")
+                expect(msg).toBe("Bad Request: Invalid Sort_By Query")
             })
     })
     test("200: returns array of all articles sorted in the order of the specified order query (With sort_by query)", () => {
@@ -197,7 +197,38 @@ describe("GET /api/articles", () => {
             .get("/api/articles?order=invalid-order")
             .expect(400)
             .then(({ body: { msg } }) => {
-                expect(msg).toBe("Bad Request")
+                expect(msg).toBe("Bad Request: Invalid Order Query")
+            })
+    })
+    test("200: returns array of articles filtered by the topic specified in the query", () => {
+        return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                expect(articles.length).toBe(12)
+                expect(articles).toBeSortedBy("created_at", {
+                    descending: true,
+                })
+                articles.forEach((article) => {
+                    expect(article).not.toContainKey("body")
+                    expect(article).toMatchObject({
+                        title: expect.any(String),
+                        topic: "mitch",
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number),
+                    })
+                })
+            })
+    })
+    test("400: sends an appropriate status and error message when given an invalid topic query", () => {
+        return request(app)
+            .get("/api/articles?topic=invalid-topic")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+                expect(msg).toBe("Bad Request: Invalid Topic Query")
             })
     })
 })
