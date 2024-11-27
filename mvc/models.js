@@ -59,7 +59,11 @@ exports.getArticlesModel = (sort_by, order, topic) => {
 
 exports.getArticleByIdModel = (articleId) => {
     return db
-        .query(`SELECT * FROM articles WHERE article_id = $1`, [articleId])
+        .query(`SELECT articles.*, CAST(COUNT(comments.article_id) AS INT) AS comment_count
+        FROM articles
+        LEFT JOIN comments ON articles.article_id = comments.article_id
+        WHERE articles.article_id = $1 
+        GROUP BY articles.article_id`, [articleId])
         .then(({ rows }) => {
             if (rows.length === 0) {
                 return Promise.reject({
@@ -67,6 +71,7 @@ exports.getArticleByIdModel = (articleId) => {
                     msg: "Article Does Not Exist",
                 })
             } else {
+                console.log(rows)
                 return rows[0]
             }
         })
