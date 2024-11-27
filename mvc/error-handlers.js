@@ -1,7 +1,16 @@
+exports.globalErrorHandler = (req, res, next) =>{
+    const {originalUrl} = req
+    res.status(404).send({msg: `${originalUrl} Not Found On Server`})
+}
+
 exports.psqlErrorHandler = (err, req, res, next) => {
-    if (err.code === "22P02" || err.code === "23502" || err.code === "23503") {
+    if (err.code === "22P02" || err.code === "23502" || err.code === "23503" || err.code === "42601") {
         res.status(400).send({ msg: "Bad Request" })
-    } else {
+    } else if (err.code === "42703" || err.code === "42702") {
+        res.status(404).send({ msg: "Column Does Not Exist" })
+    } else if (err.code === "42P10") {
+        res.status(400).send({ msg: "Bad Request: Invalid Sort By" })
+    }else {
         next(err)
     }
 }

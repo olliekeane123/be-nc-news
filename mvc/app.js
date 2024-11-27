@@ -12,6 +12,7 @@ const {
     getUsersController
 } = require("./controllers")
 const {
+    globalErrorHandler,
     psqlErrorHandler,
     customErrorHandler,
     serverErrorHandler,
@@ -36,6 +37,8 @@ app.patch("/api/articles/:article_id", patchVotesController)
 app.delete("/api/comments/:comment_id", deleteCommentByIdController)
 
 app.get("/api/users", getUsersController)
+
+app.all("*", globalErrorHandler)
 
 app.use(psqlErrorHandler)
 
