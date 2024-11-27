@@ -295,7 +295,7 @@ describe("PATCH /api/articles/:article_id", () => {
     })
 })
 
-describe('DELETE /api/comments/:comment_id', ()=>{
+describe("DELETE /api/comments/:comment_id", () => {
     test("DELETE:204 deletes the specified comment and sends no body back", () => {
         return request(app).delete("/api/comments/5").expect(204)
     })
@@ -303,7 +303,7 @@ describe('DELETE /api/comments/:comment_id', ()=>{
         return request(app)
             .delete("/api/comments/999")
             .expect(404)
-            .then(({body}) => {
+            .then(({ body }) => {
                 expect(body.msg).toBe("Comment Does Not Exist")
             })
     })
@@ -311,8 +311,26 @@ describe('DELETE /api/comments/:comment_id', ()=>{
         return request(app)
             .delete("/api/comments/not-a-comment")
             .expect(400)
-            .then(({body}) => {
+            .then(({ body }) => {
                 expect(body.msg).toBe("Bad Request")
+            })
+    })
+})
+
+describe("GET /api/users", () => {
+    test("200: returns array of all users objects with the correct key values - username, name and avatar_url", () => {
+        return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body: { users } }) => {
+                expect(users.length).toBe(4)
+                users.forEach((user) => {
+                    expect(user).toMatchObject({
+                        username: expect.any(String),
+                        name: expect.any(String),
+                        avatar_url: expect.any(String),
+                    })
+                })
             })
     })
 })
