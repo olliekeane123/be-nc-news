@@ -1,13 +1,15 @@
 // const { promises } = require("supertest/lib/test") ??
 const endpoints = require("../endpoints.json")
 const {
-    checkCategoryExists,
+    checkArticleExists,
+    checkCommentExists,
     getTopicsModel,
     getArticlesModel,
     getArticleByIdModel,
     getCommentsByArticleIdModel,
     postCommentModel,
-    patchVotesModel
+    patchVotesModel,
+    deleteCommentByIdModel
 } = require("./models")
 
 exports.getApiController = (req, res, next) => {
@@ -41,7 +43,7 @@ exports.getCommentsByArticleIdController = (req, res, next) => {
     const { article_id } = req.params
     const promises = [
         getCommentsByArticleIdModel(article_id),
-        checkCategoryExists(article_id),
+        checkArticleExists(article_id),
     ]
     Promise.all(promises)
         .then(([comments]) => {
@@ -56,11 +58,11 @@ exports.postCommentController = (req, res, next) => {
         params: { article_id },
     } = req
     const promises = [
-        checkCategoryExists(article_id),
+        checkArticleExists(article_id),
         postCommentModel(body, article_id),
     ]
     Promise.all(promises)
-        .then(([firstPromise, comment]) => {
+        .then(([_, comment]) => {
             res.status(201).send({ comment })
         })
         .catch(next)
@@ -73,11 +75,21 @@ exports.patchVotesController = (req, res, next) => {
     } = req
     const promises = [
         patchVotesModel(body, article_id),
-        checkCategoryExists(article_id),
+        checkArticleExists(article_id),
     ]
     Promise.all(promises)
         .then(([updatedArticle]) => {
             res.status(200).send({updatedArticle})
         })
         .catch(next)
+}
+
+exports.deleteCommentByIdController = (req, res, next) => {
+    const { comment_id } = req.params
+    const promises = [checkCommentExists(comment_id), deleteCommentByIdModel(comment_id)]
+    Promise.all(promises)
+    .then(() => {
+        res.status(204).send()
+    })
+    .catch(next)
 }
