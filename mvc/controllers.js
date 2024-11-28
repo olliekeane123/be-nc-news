@@ -9,7 +9,7 @@ const {
     patchVotesModel,
     deleteCommentByIdModel,
     getUsersModel,
-    getUserByUsernameModel
+    getUserByUsernameModel,
 } = require("./models")
 
 exports.getApiController = (req, res, next) => {
@@ -105,6 +105,22 @@ exports.getUserByUsernameController = (req, res, next) => {
     getUserByUsernameModel(username)
         .then((user) => {
             res.status(200).send({ user })
+        })
+        .catch(next)
+}
+
+exports.patchCommentVotesController = (req, res, next) => {
+    const {
+        body,
+        params: { comment_id },
+    } = req
+    const promises = [
+        patchVotesModel(body, article_id),
+        checkArticleExists(article_id),
+    ]
+    Promise.all(promises)
+        .then(([updatedArticle]) => {
+            res.status(200).send({ updatedArticle })
         })
         .catch(next)
 }
