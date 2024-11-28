@@ -12,8 +12,8 @@ beforeEach(() => {
     return seed(data)
 })
 
-describe("GET/POST/PATCH/DELETE /api/* - (Global Errors)", ()=>{
-    test("GET  404: Returns appropriate Not Found Error message when unfound GET request is made", ()=>{
+describe("GET/POST/PATCH/DELETE /api/* - (Global Errors)", () => {
+    test("GET  404: Returns appropriate Not Found Error message when unfound GET request is made", () => {
         return request(app)
             .get("/api/bananas")
             .expect(404)
@@ -21,7 +21,7 @@ describe("GET/POST/PATCH/DELETE /api/* - (Global Errors)", ()=>{
                 expect(body.msg).toBe("/api/bananas Not Found On Server")
             })
     })
-    test("POST  404: Returns appropriate Not Found Error message when unfound POST request is made", ()=>{
+    test("POST  404: Returns appropriate Not Found Error message when unfound POST request is made", () => {
         return request(app)
             .post("/api/melons")
             .expect(404)
@@ -29,7 +29,7 @@ describe("GET/POST/PATCH/DELETE /api/* - (Global Errors)", ()=>{
                 expect(body.msg).toBe("/api/melons Not Found On Server")
             })
     })
-    test("PATCH  404: Returns appropriate Not Found Error message when unfound PATCH request is made", ()=>{
+    test("PATCH  404: Returns appropriate Not Found Error message when unfound PATCH request is made", () => {
         return request(app)
             .patch("/api/apples")
             .expect(404)
@@ -37,7 +37,7 @@ describe("GET/POST/PATCH/DELETE /api/* - (Global Errors)", ()=>{
                 expect(body.msg).toBe("/api/apples Not Found On Server")
             })
     })
-    test("404: Returns appropriate Not Found Error message when unfound DELETE request is made", ()=>{
+    test("404: Returns appropriate Not Found Error message when unfound DELETE request is made", () => {
         return request(app)
             .delete("/api/oranges")
             .expect(404)
@@ -499,6 +499,37 @@ describe("GET /api/users", () => {
                         avatar_url: expect.any(String),
                     })
                 })
+            })
+    })
+})
+
+describe("GET /api/users/:username", () => {
+    test("GET:200 sends a single user to the client corresponding to requested username", () => {
+        return request(app)
+            .get("/api/users/lurker")
+            .expect(200)
+            .then(({ body: { user } }) => {
+                expect(user.username).toBe("lurker")
+                expect(user.name).toBe("do_nothing")
+                expect(user.avatar_url).toBe(
+                    "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+                )
+            })
+    })
+    test("GET:404 sends an appropriate status and error message when given a valid but non-existent username", () => {
+        return request(app)
+            .get("/api/users/testusername")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("User Does Not Exist")
+            })
+    })
+    test("GET:400 sends an appropriate status and error message when given an invalid username path", () => {
+        return request(app)
+            .get("/api/articles/not_a_username")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
             })
     })
 })

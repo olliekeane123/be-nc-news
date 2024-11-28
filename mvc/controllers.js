@@ -1,4 +1,3 @@
-// const { promises } = require("supertest/lib/test") ??
 const endpoints = require("../endpoints.json")
 const {
     checkArticleExists,
@@ -9,7 +8,8 @@ const {
     postCommentModel,
     patchVotesModel,
     deleteCommentByIdModel,
-    getUsersModel
+    getUsersModel,
+    getUserByUsernameModel
 } = require("./models")
 
 exports.getApiController = (req, res, next) => {
@@ -23,7 +23,7 @@ exports.getTopicsController = (req, res, next) => {
 }
 
 exports.getArticlesController = (req, res, next) => {
-    const {sort_by, order, topic} = req.query
+    const { sort_by, order, topic } = req.query
     getArticlesModel(sort_by, order, topic)
         .then((articles) => {
             res.status(200).send({ articles })
@@ -80,7 +80,7 @@ exports.patchVotesController = (req, res, next) => {
     ]
     Promise.all(promises)
         .then(([updatedArticle]) => {
-            res.status(200).send({updatedArticle})
+            res.status(200).send({ updatedArticle })
         })
         .catch(next)
 }
@@ -88,15 +88,23 @@ exports.patchVotesController = (req, res, next) => {
 exports.deleteCommentByIdController = (req, res, next) => {
     const { comment_id } = req.params
     deleteCommentByIdModel(comment_id)
-    .then(() => {
-        res.status(204).send()
-    })
-    .catch(next)
+        .then(() => {
+            res.status(204).send()
+        })
+        .catch(next)
 }
-
 
 exports.getUsersController = (req, res, next) => {
     getUsersModel().then((users) => {
         res.status(200).send({ users })
     })
+}
+
+exports.getUserByUsernameController = (req, res, next) => {
+    const { username } = req.params
+    getUserByUsernameModel(username)
+        .then((user) => {
+            res.status(200).send({ user })
+        })
+        .catch(next)
 }
