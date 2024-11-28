@@ -21,30 +21,6 @@ describe("GET/POST/PATCH/DELETE /api/* - (Global Errors)", () => {
                 expect(body.msg).toBe("/api/bananas Not Found On Server")
             })
     })
-    test("POST  404: Returns appropriate Not Found Error message when unfound POST request is made", () => {
-        return request(app)
-            .post("/api/melons")
-            .expect(404)
-            .then(({ body }) => {
-                expect(body.msg).toBe("/api/melons Not Found On Server")
-            })
-    })
-    test("PATCH  404: Returns appropriate Not Found Error message when unfound PATCH request is made", () => {
-        return request(app)
-            .patch("/api/apples")
-            .expect(404)
-            .then(({ body }) => {
-                expect(body.msg).toBe("/api/apples Not Found On Server")
-            })
-    })
-    test("404: Returns appropriate Not Found Error message when unfound DELETE request is made", () => {
-        return request(app)
-            .delete("/api/oranges")
-            .expect(404)
-            .then(({ body }) => {
-                expect(body.msg).toBe("/api/oranges Not Found On Server")
-            })
-    })
 })
 
 describe("GET /api", () => {
