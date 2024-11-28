@@ -1,6 +1,6 @@
 const endpoints = require("../endpoints.json")
 const {
-    checkArticleExists,
+    checkIdExists,
     getTopicsModel,
     getArticlesModel,
     getArticleByIdModel,
@@ -10,6 +10,7 @@ const {
     deleteCommentByIdModel,
     getUsersModel,
     getUserByUsernameModel,
+    patchCommentVotesModel,
 } = require("./models")
 
 exports.getApiController = (req, res, next) => {
@@ -44,7 +45,7 @@ exports.getCommentsByArticleIdController = (req, res, next) => {
     const { article_id } = req.params
     const promises = [
         getCommentsByArticleIdModel(article_id),
-        checkArticleExists(article_id),
+        checkIdExists("articles", "article_id", article_id),
     ]
     Promise.all(promises)
         .then(([comments]) => {
@@ -59,7 +60,7 @@ exports.postCommentController = (req, res, next) => {
         params: { article_id },
     } = req
     const promises = [
-        checkArticleExists(article_id),
+        checkIdExists("articles", "article_id", article_id),
         postCommentModel(body, article_id),
     ]
     Promise.all(promises)
@@ -76,7 +77,7 @@ exports.patchVotesController = (req, res, next) => {
     } = req
     const promises = [
         patchVotesModel(body, article_id),
-        checkArticleExists(article_id),
+        checkIdExists("articles", "article_id", article_id),
     ]
     Promise.all(promises)
         .then(([updatedArticle]) => {
@@ -115,12 +116,12 @@ exports.patchCommentVotesController = (req, res, next) => {
         params: { comment_id },
     } = req
     const promises = [
-        patchVotesModel(body, article_id),
-        checkArticleExists(article_id),
+        patchCommentVotesModel(body, comment_id),
+        checkIdExists("comments", "comment_id", comment_id),
     ]
     Promise.all(promises)
-        .then(([updatedArticle]) => {
-            res.status(200).send({ updatedArticle })
+        .then(([updatedComment]) => {
+            res.status(200).send({ updatedComment })
         })
         .catch(next)
 }

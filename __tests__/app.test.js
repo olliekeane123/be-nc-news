@@ -283,7 +283,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             .get("/api/articles/999/comments")
             .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toBe("Article Does Not Exist")
+                expect(body.msg).toBe("article_id Does Not Exist")
             })
     })
     test("GET:400 sends an appropriate status and error message when given an invalid id", () => {
@@ -352,7 +352,7 @@ describe("POST /api/articles/:article_id/comments", () => {
             .send(newComment)
             .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toBe("Article Does Not Exist")
+                expect(body.msg).toBe("article_id Does Not Exist")
             })
     })
     test("POST:400 sends an appropriate status and error message when given an invalid article_id", () => {
@@ -424,7 +424,7 @@ describe("PATCH /api/articles/:article_id", () => {
             .send(voteBody)
             .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toBe("Article Does Not Exist")
+                expect(body.msg).toBe("article_id Does Not Exist")
             })
     })
     test("PATCH:400 sends an appropriate status and error message when given an invalid article_id", () => {
@@ -503,6 +503,73 @@ describe("GET /api/users/:username", () => {
     test("GET:400 sends an appropriate status and error message when given an invalid username path", () => {
         return request(app)
             .get("/api/articles/not_a_username")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+})
+
+describe("PATCH /api/comments/:comment_id", () => {
+    test("PATCH:200 alters the vote property of the specified comment (comment_id) by the value of the (positive) voteDifference sent in the request, responds with updated comment to the client", () => {
+        const voteBody = { voteDifference: 1 }
+        return request(app)
+            .patch("/api/comments/3")
+            .send(voteBody)
+            .expect(200)
+            .then(({ body: { updatedComment } }) => {
+                expect(updatedComment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    article_id: expect.any(Number),
+                    author: expect.any(String),
+                    votes: 101,
+                    created_at: expect.any(String),
+                })
+            })
+    })
+    test("PATCH:200 alters the vote property of the specified comment (comment_id) by the value of the (negative) voteDifference sent in the request, responds with updated comment to the client", () => {
+        const voteBody = { voteDifference: -60 }
+        return request(app)
+            .patch("/api/comments/3")
+            .send(voteBody)
+            .expect(200)
+            .then(({ body: { updatedComment } }) => {
+                expect(updatedComment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    article_id: expect.any(Number),
+                    author: expect.any(String),
+                    votes: 40,
+                    created_at: expect.any(String),
+                })
+            })
+    })
+    test("PATCH:400 responds with an appropriate status and error message when provided with a bad voteBody (invalid voteDifference))", () => {
+        const voteBody = { voteDifference: "banana" }
+        return request(app)
+            .patch("/api/comments/2")
+            .send(voteBody)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+    test("PATCH:404 sends an appropriate status and error message when given a valid but non-existent comment_id", () => {
+        const voteBody = { voteDifference: 50 }
+        return request(app)
+            .patch("/api/comments/999")
+            .send(voteBody)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("comment_id Does Not Exist")
+            })
+    })
+    test("PATCH:400 sends an appropriate status and error message when given an invalid comment_id", () => {
+        const voteBody = { voteDifference: 50 }
+        return request(app)
+            .patch("/api/comments/not_a_comment")
+            .send(voteBody)
             .expect(400)
             .then(({ body }) => {
                 expect(body.msg).toBe("Bad Request")

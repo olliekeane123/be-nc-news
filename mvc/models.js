@@ -2,17 +2,17 @@ const db = require("../db/connection")
 const format = require("pg-format")
 const { validateQueries } = require("../db/seeds/utils")
 
-exports.checkArticleExists = (articleId) => {
-    return db
-        .query(`SELECT * FROM articles WHERE article_id = $1`, [articleId])
-        .then(({ rows }) => {
-            if (!rows.length) {
-                return Promise.reject({
-                    status: 404,
-                    msg: "Article Does Not Exist",
-                })
-            }
-        })
+exports.checkIdExists = (column, idType, id) => {
+    let query = `SELECT * FROM %I WHERE %I = %L`
+    query = format(query, column, idType, id)
+    return db.query(query).then(({ rows }) => {
+        if (!rows.length) {
+            return Promise.reject({
+                status: 404,
+                msg: `${idType} Does Not Exist`,
+            })
+        }
+    })
 }
 
 exports.getTopicsModel = () => {
@@ -145,5 +145,19 @@ exports.getUserByUsernameModel = (username) => {
             } else {
                 return rows[0]
             }
+        })
+}
+
+exports.patchCommentVotesModel = ({ voteDifference }, commentId) => {
+    return db
+        .query(
+            `UPDATE comments
+        SET votes = votes + $1
+        WHERE comment_id = $2 
+        RETURNING *;`,
+            [voteDifference, commentId]
+        )
+        .then(({ rows }) => {
+            return rows[0]
         })
 }
