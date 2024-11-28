@@ -2,7 +2,6 @@
 const endpoints = require("../endpoints.json")
 const {
     checkArticleExists,
-    checkCommentExists,
     getTopicsModel,
     getArticlesModel,
     getArticleByIdModel,
@@ -88,8 +87,7 @@ exports.patchVotesController = (req, res, next) => {
 
 exports.deleteCommentByIdController = (req, res, next) => {
     const { comment_id } = req.params
-    const promises = [checkCommentExists(comment_id), deleteCommentByIdModel(comment_id)]
-    Promise.all(promises)
+    deleteCommentByIdModel(comment_id)
     .then(() => {
         res.status(204).send()
     })

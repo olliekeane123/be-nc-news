@@ -84,7 +84,7 @@
         }
     },
     "PATCH /api/articles/:article_id": {
-        "description": "alters the vote property of the specified article (article_id) by the value of the (positive) voteDifference sent in the request, responds with updated article to the client",
+        "description": "alters the vote property of the specified article (article_id) by the value of the voteDifference sent in the request, responds with updated article to the client",
         "queries": [],
         "exampleResponse": {
             "comments": {
@@ -103,7 +103,7 @@
         "queries": []
     },
     "GET /api/users": {
-        "description": "serves an array of all users objects with the correct key values - username, name and avatar_url",
+        "description": "serves an array of all users",
         "queries": [],
         "exampleResponse": {
             "articles": [
