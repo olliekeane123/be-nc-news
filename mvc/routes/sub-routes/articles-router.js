@@ -10,12 +10,14 @@ const {
 
 articlesRouter.get("/", getArticlesController)
 
-articlesRouter.get("/:article_id", getArticleByIdController)
+articlesRouter
+    .route("/:article_id")
+    .get(getArticleByIdController)
+    .patch(patchVotesController)
 
-articlesRouter.get("/:article_id/comments", getCommentsByArticleIdController)
-
-articlesRouter.post("/:article_id/comments", postCommentController)
-
-articlesRouter.patch("/:article_id", patchVotesController)
+articlesRouter
+    .route("/:article_id/comments")
+    .get(getCommentsByArticleIdController)
+    .post(postCommentController)
 
 module.exports = articlesRouter
