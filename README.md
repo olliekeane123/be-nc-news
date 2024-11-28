@@ -24,6 +24,8 @@ GET /api/articles/:article_id/comments -Serves an array of comments relating to 
 
 GET /api/users -Serves an array of all users
 
+GET /api/users/:username  -Serves an object of one user specified by the :username parameter
+
 POST /api/articles/:article_id/comments -Inserts a new comment to the database and sends the comment body back to the client
 
 PATCH /api/articles/:article_id -Alters the vote property of the specified article (article_id) by the value of the voteDifference sent in the request, responds with updated article to the client

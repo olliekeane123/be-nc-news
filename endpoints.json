@@ -119,5 +119,16 @@
                 }
             ]
         }
+    },
+    "GET /api/users:username": {
+        "description": "Serves an object of one user specified by the :username parameter",
+        "queries": [],
+        "exampleResponse": {
+            "articles": {
+                "username": "rogersop",
+                "name": "paul",
+                "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+            }
+        }
     }
 }
