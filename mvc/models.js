@@ -15,19 +15,6 @@ exports.checkArticleExists = (articleId) => {
         })
 }
 
-exports.checkCommentExists = (commentId) => {
-    return db
-        .query(`SELECT * FROM comments WHERE comment_id = $1`, [commentId])
-        .then(({ rows }) => {
-            if (!rows.length) {
-                return Promise.reject({
-                    status: 404,
-                    msg: "Comment Does Not Exist",
-                })
-            }
-        })
-}
-
 exports.getTopicsModel = () => {
     return db.query(`SELECT * FROM topics`).then(({ rows }) => {
         return rows
