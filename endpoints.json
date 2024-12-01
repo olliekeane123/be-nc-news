@@ -71,7 +71,7 @@
         "description": "inserts a new comment to the db and sends the comment body back to the client",
         "queries": [],
         "exampleResponse": {
-            "comments": [
+            "comment": [
                 {
                     "comment_id": 19,
                     "body": "This is just a test comment",
@@ -87,7 +87,7 @@
         "description": "alters the vote property of the specified article (article_id) by the value of the voteDifference sent in the request, responds with updated article to the client",
         "queries": [],
         "exampleResponse": {
-            "comments": {
+            "article": {
                 "title": "Another article about Mitch",
                 "topic": "mitch",
                 "author": "butter_bridge",
@@ -106,7 +106,7 @@
         "description": "serves an array of all users",
         "queries": [],
         "exampleResponse": {
-            "articles": [
+            "users": [
                 {
                     "username": "rogersop",
                     "name": "paul",
@@ -124,10 +124,44 @@
         "description": "Serves an object of one user specified by the :username parameter",
         "queries": [],
         "exampleResponse": {
-            "articles": {
+            "user": {
                 "username": "rogersop",
                 "name": "paul",
                 "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+            }
+        }
+    },
+
+    "PATCH /api/comments/:comment_id": {
+        "description": "alters the vote property of the specified comment (comment_id) by the value of the voteDifference sent in the request, responds with updated comment to the client",
+        "queries": [],
+        "exampleResponse": {
+            "updatedComment": {
+                "comment_id": 19,
+                "body": "This is just a test comment",
+                "article_id": 13,
+                "author": "butter_bridge",
+                "votes": 0,
+                "created_at": "2024-11-26T15:24:50.249Z"
+            }
+        }
+    },
+
+    "POST /api/articles": {
+        "description": "inserts a new article to the db and sends the article body back to the client (with added comment_count)",
+        "queries": [],
+        "exampleResponse": {
+            "newArticle": {
+                "article_id": 14,
+                "title": "Example title",
+                "topic": "cats",
+                "author": "butter_bridge",
+                "body": "This is just a test article",
+                "created_at": "2024-11-26T15:24:50.249Z",
+                "votes": 0,
+                "article_img_url":
+                    "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                "comment_count": 0
             }
         }
     }

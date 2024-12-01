@@ -11,6 +11,7 @@ const {
     getUsersModel,
     getUserByUsernameModel,
     patchCommentVotesModel,
+    postArticleModel,
 } = require("./models")
 
 exports.getApiController = (req, res, next) => {
@@ -124,4 +125,12 @@ exports.patchCommentVotesController = (req, res, next) => {
             res.status(200).send({ updatedComment })
         })
         .catch(next)
+}
+
+exports.postArticleController = (req, res, next) => {
+    const { body } = req
+    postArticleModel(body).then((newArticle) => {
+        res.status(201).send({ newArticle })
+    })
+    .catch(next)
 }

@@ -6,9 +6,10 @@ const {
     getCommentsByArticleIdController,
     postCommentController,
     patchVotesController,
+    postArticleController
 } = require("../../controllers")
 
-articlesRouter.get("/", getArticlesController)
+articlesRouter.route("/").get(getArticlesController).post(postArticleController)
 
 articlesRouter
     .route("/:article_id")

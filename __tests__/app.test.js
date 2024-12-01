@@ -576,3 +576,114 @@ describe("PATCH /api/comments/:comment_id", () => {
             })
     })
 })
+
+describe("POST /api/articles", () => {
+    test("POST:201 inserts a new article to the db and sends the article body back to the client", () => {
+        const newArticle = {
+            title: "Test title",
+            topic: "cats",
+            author: "butter_bridge",
+            body: "This is just a test article",
+            article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        }
+        return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(201)
+            .then(({ body: { newArticle } }) => {
+                console.log(newArticle)
+                expect(newArticle).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: "Test title",
+                    topic: "cats",
+                    author: "butter_bridge",
+                    body: "This is just a test article",
+                    created_at: expect.any(String),
+                    votes: 0,
+                    article_img_url:
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                    comment_count: 0,
+                })
+            })
+    })
+    test("POST:201 when passed article without article_img_url inserts a new article to the db and sends the article body back to the client with the default article_img_url", () => {
+        const newArticle = {
+            title: "Test title",
+            topic: "cats",
+            author: "butter_bridge",
+            body: "This is just a test article",
+        }
+        return request(app)
+            .post("/api/articles")
+            .send(newArticle)
+            .expect(201)
+            .then(({ body: { newArticle } }) => {
+                expect(newArticle).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: "Test title",
+                    topic: "cats",
+                    author: "butter_bridge",
+                    body: "This is just a test article",
+                    created_at: expect.any(String),
+                    votes: 0,
+                    article_img_url:
+                        "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+                    comment_count: 0,
+                })
+            })
+    })
+
+    test("POST:400 responds with an appropriate status and error message when provided with an invalid article body (missing title)", () => {
+        const badArticle = {
+            topic: "cats",
+            author: "butter_bridge",
+            body: "This is just a test article",
+            article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        }
+        return request(app)
+            .post("/api/articles")
+            .send(badArticle)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+
+    test("POST:400 responds with an appropriate status and error message when provided with an invalid topic", () => {
+        const badArticle = {
+            title: "Test title",
+            topic: "nonexistent_topic",
+            author: "butter_bridge",
+            body: "This is just a test article",
+            article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        }
+        return request(app)
+            .post("/api/articles")
+            .send(badArticle)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+
+    test("POST:400 responds with an appropriate status and error message when provided with a non-existent author", () => {
+        const badArticle = {
+            title: "Test title",
+            topic: "cats",
+            author: "nonexistent_author",
+            body: "This is just a test article",
+            article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        }
+        return request(app)
+            .post("/api/articles")
+            .send(badArticle)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+            })
+    })
+})
