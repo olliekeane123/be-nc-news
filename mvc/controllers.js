@@ -25,10 +25,15 @@ exports.getTopicsController = (req, res, next) => {
 }
 
 exports.getArticlesController = (req, res, next) => {
-    const { sort_by, order, topic } = req.query
-    getArticlesModel(sort_by, order, topic)
-        .then((articles) => {
-            res.status(200).send({ articles })
+    const { sort_by, order, topic, limit, p } = req.query
+
+    const limitValue = parseInt(limit) || 10
+    const page = parseInt(p) || 1
+    const offset = (page - 1) * limitValue
+
+    getArticlesModel(sort_by, order, topic, limitValue, offset)
+        .then(({ articles, total_count }) => {
+            res.status(200).send({ articles, total_count })
         })
         .catch(next)
 }
@@ -129,8 +134,9 @@ exports.patchCommentVotesController = (req, res, next) => {
 
 exports.postArticleController = (req, res, next) => {
     const { body } = req
-    postArticleModel(body).then((newArticle) => {
-        res.status(201).send({ newArticle })
-    })
-    .catch(next)
+    postArticleModel(body)
+        .then((newArticle) => {
+            res.status(201).send({ newArticle })
+        })
+        .catch(next)
 }

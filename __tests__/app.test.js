@@ -51,13 +51,14 @@ describe("GET /api/topics", () => {
     })
 })
 
-describe("GET /api/articles", () => {
-    test("200: returns array of all articles objects with the correct key values - including the key of body removed, and an added key of comment_count with the correct values. Array should be sorted by time created in descending order", () => {
+describe.only("GET /api/articles", () => {
+    test("200: returns array of articles (default limit: 10, default page: 1) with the correct key values - including the key of body removed, and an added key of comment_count with the correct values. Array should be sorted by time created in descending order", () => {
         return request(app)
             .get("/api/articles")
             .expect(200)
-            .then(({ body: { articles } }) => {
-                expect(articles.length).toBe(13)
+            .then(({ body: { articles, total_count } }) => {
+                expect(articles).toHaveLength(10)
+                expect(total_count).toBe(13)
                 expect(articles).toBeSortedBy("created_at", {
                     descending: true,
                 })
@@ -75,12 +76,13 @@ describe("GET /api/articles", () => {
                 })
             })
     })
-    test("200: returns array of all articles sorted by the any valid column specified in the query (default: descending order)", () => {
+    test("200: returns array of articles (default limit: 10, default page: 1) sorted by the any valid column specified in the query (default: descending order)", () => {
         return request(app)
             .get("/api/articles?sort_by=comment_count")
             .expect(200)
-            .then(({ body: { articles } }) => {
-                expect(articles.length).toBe(13)
+            .then(({ body: { articles, total_count } }) => {
+                expect(articles).toHaveLength(10)
+                expect(total_count).toBe(13)
                 expect(articles).toBeSortedBy("comment_count", {
                     descending: true,
                 })
@@ -122,12 +124,13 @@ describe("GET /api/articles", () => {
                 expect(msg).toBe("Bad Request: Invalid Sort_By Query")
             })
     })
-    test("200: returns array of all articles sorted in the order of the specified order query (With sort_by query)", () => {
+    test("200: returns array of articles (default limit: 10, default page: 1) sorted in the order of the specified order query (With sort_by query)", () => {
         return request(app)
             .get("/api/articles?sort_by=comment_count&order=asc")
             .expect(200)
-            .then(({ body: { articles } }) => {
-                expect(articles.length).toBe(13)
+            .then(({ body: { articles, total_count } }) => {
+                expect(articles).toHaveLength(10)
+                expect(total_count).toBe(13)
                 expect(articles).toBeSortedBy("comment_count", {
                     descending: false,
                 })
@@ -145,12 +148,13 @@ describe("GET /api/articles", () => {
                 })
             })
     })
-    test("200: returns array of all articles sorted in the order of the specified order query (Without sort_by query)", () => {
+    test("200: returns array of articles (default limit: 10, default page: 1) sorted in the order of the specified order query (Without sort_by query)", () => {
         return request(app)
             .get("/api/articles?order=asc")
             .expect(200)
-            .then(({ body: { articles } }) => {
-                expect(articles.length).toBe(13)
+            .then(({ body: { articles, total_count } }) => {
+                expect(articles).toHaveLength(10)
+                expect(total_count).toBe(13)
                 expect(articles).toBeSortedBy("created_at", {
                     descending: false,
                 })
@@ -176,12 +180,13 @@ describe("GET /api/articles", () => {
                 expect(msg).toBe("Bad Request: Invalid Order Query")
             })
     })
-    test("200: returns array of articles filtered by the topic specified in the query", () => {
+    test("200: returns array of articles (default limit: 10, default page: 1) filtered by the topic specified in the query", () => {
         return request(app)
             .get("/api/articles?topic=mitch")
             .expect(200)
-            .then(({ body: { articles } }) => {
-                expect(articles.length).toBe(12)
+            .then(({ body: { articles, total_count } }) => {
+                expect(articles).toHaveLength(10)
+                expect(total_count).toBe(12)
                 expect(articles).toBeSortedBy("created_at", {
                     descending: true,
                 })
@@ -205,6 +210,30 @@ describe("GET /api/articles", () => {
             .expect(400)
             .then(({ body: { msg } }) => {
                 expect(msg).toBe("Bad Request: Invalid Topic Query")
+            })
+    })
+    test("200: returns array of articles with the offset point corresponding to the specified page in the query (default limit: 10) ", () => {
+        return request(app)
+            .get("/api/articles?p=2")
+            .expect(200)
+            .then(({ body: { articles, total_count } }) => {
+                expect(articles).toHaveLength(3)
+                expect(total_count).toBe(13)
+                expect(articles).toBeSortedBy("created_at", {
+                    descending: true,
+                })
+                articles.forEach((article) => {
+                    expect(article).not.toContainKey("body")
+                    expect(article).toMatchObject({
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number),
+                    })
+                })
             })
     })
 })

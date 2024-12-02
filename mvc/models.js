@@ -21,28 +21,42 @@ exports.getTopicsModel = () => {
     })
 }
 
-exports.getArticlesModel = (sort_by, order, topic) => {
+exports.getArticlesModel = (sort_by, order, topic, limit, offset) => {
     return validateQueries(sort_by, order, topic).then(() => {
         const sortByValue = sort_by || "created_at"
         const orderValue = order || "DESC"
         const topicValue = topic || "%"
 
-        let query = `
-        SELECT articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, 
-               CAST(COUNT(comments.article_id) AS INT) AS comment_count
-        FROM articles
-        LEFT JOIN comments ON articles.article_id = comments.article_id
-        WHERE articles.topic LIKE %L 
-        GROUP BY articles.article_id
-        ORDER BY %I %s`
+        let articlesQuery = `
+            SELECT articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url,
+                   CAST(COUNT(comments.article_id) AS INT) AS comment_count
+            FROM articles
+            LEFT JOIN comments ON articles.article_id = comments.article_id
+            WHERE articles.topic LIKE %L
+            GROUP BY articles.article_id
+            ORDER BY %I %s
+            LIMIT %L OFFSET %L`
 
-        query = format(query, topicValue, sortByValue, orderValue)
+        articlesQuery = format(articlesQuery, topicValue, sortByValue, orderValue, limit, offset)
 
-        return db.query(query).then(({ rows }) => {
-            return rows
+        //SELECT COUNT
+
+        let countQuery = `
+            SELECT COUNT(*)::INT AS total_count
+            FROM articles
+            WHERE articles.topic LIKE %L`
+
+        countQuery = format(countQuery, topicValue)
+
+        return Promise.all([db.query(articlesQuery), db.query(countQuery)]).then(([articlesResult, countResult]) => {
+            return {
+                articles: articlesResult.rows,
+                total_count: countResult.rows[0].total_count,
+            }
         })
     })
 }
+
 
 exports.getArticleByIdModel = (articleId) => {
     return db
