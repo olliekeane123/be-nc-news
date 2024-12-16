@@ -621,7 +621,6 @@ describe("POST /api/articles", () => {
             .send(newArticle)
             .expect(201)
             .then(({ body: { newArticle } }) => {
-                console.log(newArticle)
                 expect(newArticle).toMatchObject({
                     article_id: expect.any(Number),
                     title: "Test title",
