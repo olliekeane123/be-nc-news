@@ -51,7 +51,7 @@ describe("GET /api/topics", () => {
     })
 })
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
     test("200: returns array of articles (default limit: 10, default page: 1) with the correct key values - including the key of body removed, and an added key of comment_count with the correct values. Array should be sorted by time created in descending order", () => {
         return request(app)
             .get("/api/articles")

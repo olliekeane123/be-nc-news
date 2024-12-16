@@ -42,7 +42,7 @@ exports.getArticlesModel = (sort_by, order, topic, limit, offset) => {
         //SELECT COUNT
 
         let countQuery = `
-            SELECT COUNT(*)::INT AS total_count
+            SELECT COUNT(*) AS total_count
             FROM articles
             WHERE articles.topic LIKE %L`
 
@@ -51,7 +51,7 @@ exports.getArticlesModel = (sort_by, order, topic, limit, offset) => {
         return Promise.all([db.query(articlesQuery), db.query(countQuery)]).then(([articlesResult, countResult]) => {
             return {
                 articles: articlesResult.rows,
-                total_count: countResult.rows[0].total_count,
+                total_count: Number(countResult.rows[0].total_count)
             }
         })
     })
