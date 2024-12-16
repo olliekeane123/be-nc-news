@@ -32,7 +32,7 @@ exports.validateQueries = (sort_by, order, topic) => {
         "comment_count",
     ]
     const allowedOrderValues = ["ASC", "asc", "DESC", "desc"]
-    const allowedTopicValues = ["mitch", "cats"]
+    const allowedTopicValues = ["mitch", "cats", "coding", "football", "cooking"]
 
     if (sort_by && !allowedSortByValues.includes(sort_by)) {
         return Promise.reject({
