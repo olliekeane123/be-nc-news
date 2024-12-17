@@ -30,8 +30,15 @@ POST /api/articles/:article_id/comments -Inserts a new comment to the database a
 
 PATCH /api/articles/:article_id -Alters the vote property of the specified article (article_id) by the value of the voteDifference sent in the request, responds with updated article to the client
 
-DELETE /api/articles/:article_id -Deletes the specified comment and sends no body back
+DELETE /api/comments/:comment_id -Deletes the specified comment and sends no body back
 
+GET /api/users -Serves an array of all users
+
+GET /api/users/:username -Serves a single user object corresponding to the requested username
+
+PATCH /api/comments/:comment_id -Alters vote property of specified comment
+
+POST /api/articles -Inserts new article to the db and sends same article back to client
 ## **Getting Started**
 
 Follow these instructions to set up and run the project locally.

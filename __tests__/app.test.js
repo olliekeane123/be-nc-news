@@ -65,6 +65,7 @@ describe("GET /api/articles", () => {
                 articles.forEach((article) => {
                     expect(article).not.toContainKey("body")
                     expect(article).toMatchObject({
+                        article_id: expect.any(Number),
                         title: expect.any(String),
                         topic: expect.any(String),
                         author: expect.any(String),
@@ -89,6 +90,7 @@ describe("GET /api/articles", () => {
                 articles.forEach((article) => {
                     expect(article).not.toContainKey("body")
                     expect(article).toMatchObject({
+                        article_id: expect.any(Number),
                         title: expect.any(String),
                         topic: expect.any(String),
                         author: expect.any(String),
@@ -137,6 +139,7 @@ describe("GET /api/articles", () => {
                 articles.forEach((article) => {
                     expect(article).not.toContainKey("body")
                     expect(article).toMatchObject({
+                        article_id: expect.any(Number),
                         title: expect.any(String),
                         topic: expect.any(String),
                         author: expect.any(String),
@@ -161,6 +164,7 @@ describe("GET /api/articles", () => {
                 articles.forEach((article) => {
                     expect(article).not.toContainKey("body")
                     expect(article).toMatchObject({
+                        article_id: expect.any(Number),
                         title: expect.any(String),
                         topic: expect.any(String),
                         author: expect.any(String),
@@ -193,6 +197,7 @@ describe("GET /api/articles", () => {
                 articles.forEach((article) => {
                     expect(article).not.toContainKey("body")
                     expect(article).toMatchObject({
+                        article_id: expect.any(Number),
                         title: expect.any(String),
                         topic: "mitch",
                         author: expect.any(String),
@@ -225,6 +230,7 @@ describe("GET /api/articles", () => {
                 articles.forEach((article) => {
                     expect(article).not.toContainKey("body")
                     expect(article).toMatchObject({
+                        article_id: expect.any(Number),
                         title: expect.any(String),
                         topic: expect.any(String),
                         author: expect.any(String),
