@@ -28,18 +28,17 @@ exports.getArticlesModel = (sort_by, order, topic, limit, offset) => {
         const topicValue = topic || "%"
 
         let articlesQuery = `
-            SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url,
+            SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, users.avatar_url,
                    CAST(COUNT(comments.article_id) AS INT) AS comment_count
             FROM articles
             LEFT JOIN comments ON articles.article_id = comments.article_id
+            LEFT JOIN users ON articles.author = users.username
             WHERE articles.topic LIKE %L
-            GROUP BY articles.article_id
+            GROUP BY articles.article_id, users.avatar_url
             ORDER BY %I %s
             LIMIT %L OFFSET %L`
 
         articlesQuery = format(articlesQuery, topicValue, sortByValue, orderValue, limit, offset)
-
-        //SELECT COUNT
 
         let countQuery = `
             SELECT COUNT(*) AS total_count
@@ -61,11 +60,12 @@ exports.getArticlesModel = (sort_by, order, topic, limit, offset) => {
 exports.getArticleByIdModel = (articleId) => {
     return db
         .query(
-            `SELECT articles.*, CAST(COUNT(comments.article_id) AS INT) AS comment_count
+            `SELECT articles.*, users.avatar_url, CAST(COUNT(comments.article_id) AS INT) AS comment_count
         FROM articles
         LEFT JOIN comments ON articles.article_id = comments.article_id
+        LEFT JOIN users ON articles.author = users.username
         WHERE articles.article_id = $1 
-        GROUP BY articles.article_id`,
+        GROUP BY articles.article_id, users.avatar_url`,
             [articleId]
         )
         .then(({ rows }) => {
@@ -83,7 +83,11 @@ exports.getArticleByIdModel = (articleId) => {
 exports.getCommentsByArticleIdModel = (articleId) => {
     return db
         .query(
-            `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`,
+            `SELECT comments.*, users.avatar_url
+            FROM comments 
+            LEFT JOIN users ON comments.author = users.username
+            WHERE article_id = $1
+            ORDER BY created_at DESC;`,
             [articleId]
         )
         .then(({ rows }) => {

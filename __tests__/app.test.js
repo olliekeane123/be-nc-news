@@ -72,6 +72,7 @@ describe("GET /api/articles", () => {
                         created_at: expect.any(String),
                         votes: expect.any(Number),
                         article_img_url: expect.any(String),
+                        avatar_url: expect.any(String),
                         comment_count: expect.any(Number),
                     })
                 })
@@ -97,6 +98,7 @@ describe("GET /api/articles", () => {
                         created_at: expect.any(String),
                         votes: expect.any(Number),
                         article_img_url: expect.any(String),
+                        avatar_url: expect.any(String),
                         comment_count: expect.any(Number),
                     })
                 })
@@ -146,6 +148,7 @@ describe("GET /api/articles", () => {
                         created_at: expect.any(String),
                         votes: expect.any(Number),
                         article_img_url: expect.any(String),
+                        avatar_url: expect.any(String),
                         comment_count: expect.any(Number),
                     })
                 })
@@ -171,6 +174,7 @@ describe("GET /api/articles", () => {
                         created_at: expect.any(String),
                         votes: expect.any(Number),
                         article_img_url: expect.any(String),
+                        avatar_url: expect.any(String),
                         comment_count: expect.any(Number),
                     })
                 })
@@ -204,6 +208,7 @@ describe("GET /api/articles", () => {
                         created_at: expect.any(String),
                         votes: expect.any(Number),
                         article_img_url: expect.any(String),
+                        avatar_url: expect.any(String),
                         comment_count: expect.any(Number),
                     })
                 })
@@ -237,6 +242,7 @@ describe("GET /api/articles", () => {
                         created_at: expect.any(String),
                         votes: expect.any(Number),
                         article_img_url: expect.any(String),
+                        avatar_url: expect.any(String),
                         comment_count: expect.any(Number),
                     })
                 })
@@ -263,6 +269,9 @@ describe("GET /api/articles/:article_id", () => {
                     "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
                 )
                 expect(article.comment_count).toBe(11)
+                expect(article.avatar_url).toBe(
+                    "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+                )
             })
     })
     test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
@@ -301,6 +310,7 @@ describe("GET /api/articles/:article_id/comments", () => {
                         author: expect.any(String),
                         votes: expect.any(Number),
                         created_at: expect.any(String),
+                        avatar_url: expect.any(String)
                     })
                 })
             })
